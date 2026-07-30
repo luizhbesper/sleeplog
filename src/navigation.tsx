@@ -1,5 +1,6 @@
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { Text } from "react-native";
+import { AnalysisScreen } from "@/presentation/screens/AnalysisScreen";
 import { LogScreen } from "@/presentation/screens/LogScreen";
 import { colors } from "@/presentation/theme";
 
@@ -22,6 +23,11 @@ export function Navigation() {
         name="Log"
         component={LogScreen}
         options={{ tabBarIcon: tabIcon("🗒") }}
+      />
+      <Tab.Screen
+        name="Analysis"
+        component={AnalysisScreen}
+        options={{ tabBarIcon: tabIcon("📈") }}
       />
     </Tab.Navigator>
   );
