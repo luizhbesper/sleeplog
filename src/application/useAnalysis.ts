@@ -1,7 +1,7 @@
 import { useFocusEffect } from "@react-navigation/native";
 import { useCallback, useRef, useState } from "react";
-import { type Analysis, analyzeSleep } from "@/business/anthropic";
-import { useSleepLog } from "@/business/useSleepLog";
+import { type Analysis, analyzeSleep } from "@/application/anthropic";
+import { useSleepLog } from "@/application/useSleepLog";
 import { computeStats } from "@/domain/stats";
 
 type State =

@@ -2,7 +2,7 @@ import { z } from "zod";
 import {
   buildAnalysisPrompt,
   SYSTEM_PROMPT,
-} from "@/business/sleepAnalysisPrompt";
+} from "@/application/sleepAnalysisPrompt";
 import type { SleepEntry } from "@/domain/sleepEntry";
 import type { SleepStats } from "@/domain/stats";
 

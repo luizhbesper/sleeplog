@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { FlatList, Pressable, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useSleepLog } from "@/business/useSleepLog";
+import { useSleepLog } from "@/application/useSleepLog";
 import { AddEntrySheet } from "@/presentation/components/AddEntrySheet";
 import { SleepCard } from "@/presentation/components/SleepCard";
 import { colors, font, radius, spacing } from "@/presentation/theme";

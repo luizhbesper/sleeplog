@@ -1,7 +1,7 @@
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { BABY } from "@/business/sleepAnalysisPrompt";
-import { useAnalysis } from "@/business/useAnalysis";
+import { BABY } from "@/application/sleepAnalysisPrompt";
+import { useAnalysis } from "@/application/useAnalysis";
 import { formatDate, formatDuration, formatTime } from "@/domain/sleepEntry";
 import type { SleepStats } from "@/domain/stats";
 import { Skeleton } from "@/presentation/components/Skeleton";
