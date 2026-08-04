@@ -93,7 +93,13 @@ export function AnalysisScreen() {
           <View>
             <Text style={styles.error}>Couldn't get an analysis.</Text>
             <Text style={styles.muted}>{state.message}</Text>
-            <Pressable testID="retry" style={styles.retry} onPress={retry}>
+            <Pressable
+              testID="retry"
+              style={styles.retry}
+              onPress={retry}
+              accessibilityRole="button"
+              accessibilityLabel="Try the analysis again"
+            >
               <Text style={styles.retryText}>Try again</Text>
             </Pressable>
           </View>

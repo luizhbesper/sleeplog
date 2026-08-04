@@ -1,5 +1,5 @@
 import { useFocusEffect } from "@react-navigation/native";
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useMemo, useRef, useState } from "react";
 import { type Analysis, analyzeSleep } from "@/application/anthropic";
 import { useSleepLog } from "@/application/useSleepLog";
 import { computeStats } from "@/domain/stats";
@@ -15,11 +15,13 @@ export function useAnalysis() {
   const [state, setState] = useState<State>({ status: "empty" });
   const analyzedKey = useRef<string | null>(null);
 
-  const stats = computeStats(entries);
+  const stats = useMemo(() => computeStats(entries), [entries]);
   const key = entries.map((e) => e.id).join(",");
 
   const run = useCallback(async () => {
     if (!stats) return setState({ status: "empty" });
+    // Stays set even on failure — clearing it here would let the focus effect
+    // re-fire on the next render and loop the request. Recovery is the retry button.
     analyzedKey.current = key;
     setState({ status: "loading" });
     try {
@@ -28,7 +30,6 @@ export function useAnalysis() {
         analysis: await analyzeSleep(entries, stats),
       });
     } catch (e) {
-      analyzedKey.current = null;
       setState({ status: "error", message: (e as Error).message });
     }
   }, [entries, stats, key]);

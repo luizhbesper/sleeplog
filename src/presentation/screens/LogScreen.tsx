@@ -2,6 +2,7 @@ import { useState } from "react";
 import { FlatList, Pressable, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useSleepLog } from "@/application/useSleepLog";
+import { toDateString } from "@/domain/sleepEntry";
 import { AddEntrySheet } from "@/presentation/components/AddEntrySheet";
 import { SleepCard } from "@/presentation/components/SleepCard";
 import { colors, font, radius, spacing } from "@/presentation/theme";
@@ -16,6 +17,14 @@ function Empty() {
       <Text style={styles.emptyHint}>Tap + to log your first sleep</Text>
     </View>
   );
+}
+
+const WEEK_MS = 7 * 24 * 60 * 60 * 1000;
+
+// The wireframe header only tells the truth while every entry is recent.
+function sectionTitle(entries: { date: string }[]) {
+  const cutoff = toDateString(new Date(Date.now() - WEEK_MS));
+  return entries.every((e) => e.date >= cutoff) ? "THIS WEEK" : "ALL ENTRIES";
 }
 
 export function LogScreen() {
@@ -38,7 +47,9 @@ export function LogScreen() {
         keyExtractor={(e) => e.id}
         contentContainerStyle={styles.list}
         ListHeaderComponent={
-          entries.length ? <Text style={styles.section}>THIS WEEK</Text> : null
+          entries.length ? (
+            <Text style={styles.section}>{sectionTitle(entries)}</Text>
+          ) : null
         }
         ListEmptyComponent={Empty}
         renderItem={({ item, index }) => (
@@ -50,8 +61,12 @@ export function LogScreen() {
         testID="add-entry-fab"
         style={styles.fab}
         onPress={() => setSheetOpen(true)}
+        accessibilityRole="button"
+        accessibilityLabel="Add sleep entry"
       >
-        <Text style={styles.fabText}>+</Text>
+        <Text style={styles.fabText} importantForAccessibility="no">
+          +
+        </Text>
       </Pressable>
 
       <AddEntrySheet

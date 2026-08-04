@@ -3,8 +3,11 @@ import DateTimePicker from "@react-native-community/datetimepicker";
 import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import {
+  KeyboardAvoidingView,
   Modal,
+  Platform,
   Pressable,
+  ScrollView,
   StyleSheet,
   Text,
   TextInput,
@@ -68,87 +71,112 @@ export function AddEntrySheet({
 
   return (
     <Modal visible={visible} transparent animationType="slide">
-      <Pressable style={styles.backdrop} onPress={close} />
-      <View style={styles.sheet}>
-        <View style={styles.grabber} />
-        <Text style={styles.title}>Add Sleep Entry</Text>
+      <KeyboardAvoidingView
+        style={styles.fill}
+        behavior={Platform.OS === "ios" ? "padding" : undefined}
+      >
+        <Pressable
+          style={styles.backdrop}
+          onPress={close}
+          accessibilityLabel="Close"
+          accessibilityRole="button"
+        />
+        <ScrollView style={styles.sheet} keyboardShouldPersistTaps="handled">
+          <View style={styles.grabber} />
+          <Text style={styles.title}>Add Sleep Entry</Text>
 
-        {(
-          [
-            ["DATE", "date"],
-            ["SLEEP TIME", "sleepStart"],
-            ["WAKE TIME", "wakeTime"],
-          ] as const
-        ).map(([label, field]) => (
+          {(
+            [
+              ["DATE", "date"],
+              ["SLEEP TIME", "sleepStart"],
+              ["WAKE TIME", "wakeTime"],
+            ] as const
+          ).map(([label, field]) => (
+            <Controller
+              key={field}
+              control={control}
+              name={field}
+              render={({ field: { value, onChange }, fieldState }) => (
+                <View>
+                  <Text style={styles.label}>{label}</Text>
+                  <Pressable
+                    testID={`picker-${field}`}
+                    style={[styles.input, picking === field && styles.active]}
+                    onPress={() => setPicking(picking === field ? null : field)}
+                    accessibilityRole="button"
+                    accessibilityLabel={`${label}: ${
+                      field === "date" ? formatDate(value) : formatTime(value)
+                    }`}
+                  >
+                    <Text style={styles.inputText}>
+                      {field === "date" ? formatDate(value) : formatTime(value)}
+                    </Text>
+                  </Pressable>
+                  {!!fieldState.error && (
+                    <Text style={styles.error}>{fieldState.error.message}</Text>
+                  )}
+                  {picking === field && (
+                    <DateTimePicker
+                      value={toDate(value, field)}
+                      mode={field === "date" ? "date" : "time"}
+                      maximumDate={field === "date" ? new Date() : undefined}
+                      display="spinner"
+                      themeVariant="light"
+                      textColor={colors.ink}
+                      style={styles.picker}
+                      onChange={(_, selected) => {
+                        if (!selected) return;
+                        onChange(
+                          field === "date"
+                            ? toDateString(selected)
+                            : toTimeString(selected),
+                        );
+                      }}
+                    />
+                  )}
+                </View>
+              )}
+            />
+          ))}
+
+          <Text style={styles.label}>NOTES (OPTIONAL)</Text>
           <Controller
-            key={field}
             control={control}
-            name={field}
-            render={({ field: { value, onChange }, fieldState }) => (
-              <View>
-                <Text style={styles.label}>{label}</Text>
-                <Pressable
-                  testID={`picker-${field}`}
-                  style={[styles.input, picking === field && styles.active]}
-                  onPress={() => setPicking(picking === field ? null : field)}
-                >
-                  <Text style={styles.inputText}>
-                    {field === "date" ? formatDate(value) : formatTime(value)}
-                  </Text>
-                </Pressable>
-                {!!fieldState.error && (
-                  <Text style={styles.error}>{fieldState.error.message}</Text>
-                )}
-                {picking === field && (
-                  <DateTimePicker
-                    value={toDate(value, field)}
-                    mode={field === "date" ? "date" : "time"}
-                    display="spinner"
-                    themeVariant="light"
-                    textColor={colors.ink}
-                    style={styles.picker}
-                    onChange={(_, selected) => {
-                      if (!selected) return;
-                      onChange(
-                        field === "date"
-                          ? toDateString(selected)
-                          : toTimeString(selected),
-                      );
-                    }}
-                  />
-                )}
-              </View>
+            name="notes"
+            render={({ field: { value, onChange } }) => (
+              <TextInput
+                testID="notes-input"
+                style={styles.input}
+                placeholder="e.g. woke once at 3am…"
+                placeholderTextColor={colors.muted}
+                value={value}
+                onChangeText={onChange}
+                accessibilityLabel="Notes, optional"
+              />
             )}
           />
-        ))}
 
-        <Text style={styles.label}>NOTES (OPTIONAL)</Text>
-        <Controller
-          control={control}
-          name="notes"
-          render={({ field: { value, onChange } }) => (
-            <TextInput
-              testID="notes-input"
-              style={styles.input}
-              placeholder="e.g. woke once at 3am…"
-              placeholderTextColor={colors.muted}
-              value={value}
-              onChangeText={onChange}
-            />
-          )}
-        />
-
-        <Pressable testID="save-entry" style={styles.save} onPress={save}>
-          <Text style={styles.saveText}>Save Entry</Text>
-        </Pressable>
-      </View>
+          <Pressable
+            testID="save-entry"
+            style={styles.save}
+            onPress={save}
+            accessibilityRole="button"
+            accessibilityLabel="Save entry"
+          >
+            <Text style={styles.saveText}>Save Entry</Text>
+          </Pressable>
+        </ScrollView>
+      </KeyboardAvoidingView>
     </Modal>
   );
 }
 
 const styles = StyleSheet.create({
+  fill: { flex: 1 },
   backdrop: { flex: 1, backgroundColor: "rgba(0,0,0,0.4)" },
   sheet: {
+    maxHeight: "85%",
+    flexGrow: 0,
     backgroundColor: colors.bg,
     borderTopLeftRadius: radius.lg,
     borderTopRightRadius: radius.lg,
