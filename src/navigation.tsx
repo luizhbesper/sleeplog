@@ -6,8 +6,15 @@ import { colors } from "@/presentation/theme";
 
 const Tab = createBottomTabNavigator();
 
+// The tab's own label is already announced — the emoji would be read twice.
 const tabIcon = (glyph: string) => (props: { color: string }) => (
-  <Text style={{ color: props.color, fontSize: 18 }}>{glyph}</Text>
+  <Text
+    style={{ color: props.color, fontSize: 18 }}
+    importantForAccessibility="no"
+    accessibilityElementsHidden
+  >
+    {glyph}
+  </Text>
 );
 
 export function Navigation() {

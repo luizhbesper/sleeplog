@@ -24,6 +24,15 @@ export function SleepCard({
     <View
       style={[styles.card, highlighted && styles.highlighted]}
       testID="sleep-card"
+      accessible
+      accessibilityLabel={[
+        formatDate(entry.date),
+        `slept ${formatTime(entry.sleepStart)} to ${formatTime(entry.wakeTime)}`,
+        formatDuration(minutes),
+        entry.notes,
+      ]
+        .filter(Boolean)
+        .join(", ")}
     >
       <Text style={styles.date}>{formatDate(entry.date)}</Text>
       <View style={styles.row}>
